@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Image, RefreshControl } from 'react-native'
+import { View, Text, FlatList, Image, RefreshControl, Alert } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { useGlobalContext } from '@/context/GlobalProvider';
 import CustomButton from '@/components/CustomButton';
@@ -9,23 +9,14 @@ import SearchInput from '@/components/SearchInput';
 import Trending from '@/components/Trending';
 import EmptyState from '@/components/EmptyState';
 import { getAllPosts } from '@/lib/appwrite';
+import  Document  from "react-native-appwrite/types/models"
+import useAppWrite from '../../hooks/useAppwrite';
 
 const Home = () => {
 
-  const [isLoading, setIsLoading] = useState(true)
-  const [data, setData] = useState([])
+  // Call custom hook to fetch posts data
+  const { data: posts, refetch} =   useAppWrite(getAllPosts)
 
-
-  // Call to load posts data on screenload using useEffect
-  useEffect(() => {
-
-    const fetchData = async () => {
-      getAllPosts()
-    }
-
-    fetchData()
-  }, [])
-  
  
   const [refreshing, setRefreshing] = useState(false) // state to handle re-call of posts
 
@@ -35,19 +26,24 @@ const Home = () => {
       setRefreshing(true)
 
       // re call posts / refresh
+      await refetch()
 
       setRefreshing(false)
   }
 
-
+  console.log(posts)
   return (
      
     <SafeAreaView className='bg-primary h-full'>
         <FlatList
-          data={[]}
-          keyExtractor={(item) => item.id.toString()}
+          data={posts}
+          keyExtractor={(item) => item?.$id}
           renderItem={({ item }) => (
-            <Text className='text-3xl text-white'>{item.id}</Text>
+            <View>
+              
+                 <Text className='text-3xl text-white'>{item.title}</Text>
+            </View>
+       
             
           )}
           ListHeaderComponent={() => (

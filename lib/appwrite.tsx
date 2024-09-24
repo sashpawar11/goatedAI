@@ -1,3 +1,4 @@
+
 import {  endpoint,
     platform,
     projectID,
@@ -8,7 +9,7 @@ import {  endpoint,
 
 
 
-import { Client , Account, ID, Avatars, Databases, Query, Storage  } from 'react-native-appwrite';
+import { Client , Account, ID, Avatars, Databases, Query, Storage, Models  } from 'react-native-appwrite';
 
 // Init your React Native SDK
 const client = new Client();
@@ -122,7 +123,7 @@ export const getCurrentUser = async() => {
 }
 
 
-export const getAllPosts = async () => {
+export const getAllPosts = async () :  Promise<Document[] | undefined> => {
 
     try {
 
@@ -130,7 +131,12 @@ export const getAllPosts = async () => {
             databaseId, 
             videoCollectionId
          )
-         return _allPosts.documents
+         
+          if (!_allPosts.documents || _allPosts.documents.length === 0) {
+            return undefined;
+        }
+
+         return _allPosts.documents as unknown as Document[]; 
         
     } catch (error) {
             if (error instanceof Error) {
