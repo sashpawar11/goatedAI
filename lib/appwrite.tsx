@@ -144,3 +144,27 @@ export const getAllPosts = async () :  Promise<Document[] | undefined> => {
             }
     }
 }
+
+
+export const getLatestPosts = async () :  Promise<Document[] | undefined> => {
+
+    try {
+
+         const _latestPosts = await databases.listDocuments(
+            databaseId, 
+            videoCollectionId,
+            [Query.orderDesc('$createdAt')]
+         )
+         
+          if (!_latestPosts.documents || _latestPosts.documents.length === 0) {
+            return undefined;
+        }
+
+         return _latestPosts.documents as unknown as Document[]; 
+        
+    } catch (error) {
+            if (error instanceof Error) {
+                throw new Error(error.message)
+            }
+    }
+}

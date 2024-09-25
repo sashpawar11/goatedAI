@@ -8,16 +8,18 @@ import {images} from '../../constants'
 import SearchInput from '@/components/SearchInput';
 import Trending from '@/components/Trending';
 import EmptyState from '@/components/EmptyState';
-import { getAllPosts } from '@/lib/appwrite';
+import { getAllPosts, getLatestPosts } from '@/lib/appwrite';
 import  Document  from "react-native-appwrite/types/models"
 import useAppWrite from '../../hooks/useAppwrite';
+import VideoCard from '@/components/VideoCard';
 
 const Home = () => {
 
   // Call custom hook to fetch posts data
   const { data: posts, refetch} =   useAppWrite(getAllPosts)
 
- 
+ const { data: latestposts} = useAppWrite(getLatestPosts)
+
   const [refreshing, setRefreshing] = useState(false) // state to handle re-call of posts
 
 
@@ -31,7 +33,6 @@ const Home = () => {
       setRefreshing(false)
   }
 
-  console.log(posts)
   return (
      
     <SafeAreaView className='bg-primary h-full'>
@@ -39,12 +40,9 @@ const Home = () => {
           data={posts}
           keyExtractor={(item) => item?.$id}
           renderItem={({ item }) => (
-            <View>
-              
-                 <Text className='text-3xl text-white'>{item.title}</Text>
-            </View>
-       
-            
+           <VideoCard
+             video={item}
+           />
           )}
           ListHeaderComponent={() => (
             <View className='my-6 px-4 space-y-6'>
@@ -66,7 +64,6 @@ const Home = () => {
                           />
                       </View>
                       <SearchInput
-
                       />
 
                       <View className='w-full flex-1 pt-8 pb-8'>
@@ -74,8 +71,7 @@ const Home = () => {
                             Latest Videos
                           </Text>
                           <Trending
-                            posts={[{id:1},{id:2},{id:3}]}
-
+                            posts={latestposts ?? []}
                           />
 
                       </View>
